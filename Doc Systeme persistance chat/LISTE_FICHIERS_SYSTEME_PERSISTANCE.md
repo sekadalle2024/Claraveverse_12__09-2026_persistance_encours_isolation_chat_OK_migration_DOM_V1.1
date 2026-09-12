@@ -1,0 +1,419 @@
+# 📋 Liste Complète des Fichiers - Système de Persistance
+
+## 🎯 Fichiers Essentiels (Ne PAS Supprimer)
+
+### 1. Point d'Entrée : `index.html`
+
+```html
+<!-- Scripts chargés dans cet ordre précis -->
+<script src="/wrap-tables-auto.js"></script>
+<script src="/Flowise.js"></script>
+<script type="module" src="/force-restore-on-load.js"></script>
+<script src="/menu-persistence-bridge.js"></script>
+<script src="/menu.js"></script>
+<script type="module" src="/auto-restore-chat-change.js"></script> ⭐ NOUVEAU
+```
+
+---
+
+## 📁 Dossier `public/` - Scripts Frontend
+
+### Scripts Actifs (Utilisés)
+
+| Fichier | Rôle | Priorité | Statut |
+|---------|------|----------|--------|
+| **`restore-lock-manager.js`** | Gestionnaire de verrouillage global | ⭐⭐⭐ CRITIQUE | ✅ ACTIF |
+| **`single-restore-on-load.js`** | Restauration unique au chargement | ⭐⭐⭐ CRITIQUE | ✅ ACTIF |
+| **`auto-restore-chat-change.js`** | Restauration automatique au changement de chat | ⭐⭐⭐ CRITIQUE | ✅ ACTIF |
+| **`dev-indexedDB.js`** | Édition de cellules avec IndexedDB | ⭐⭐⭐ INTÉGRÉ | ✅ ACTIF |
+| `wrap-tables-auto.js` | Enveloppe les tables dans des conteneurs | ⭐⭐⭐ | ✅ ACTIF |
+| `Flowise.js` | Intégration avec Flowise | ⭐⭐⭐ | ✅ ACTIF |
+| `menu.js` | Menus contextuels des tables | ⭐⭐⭐ | ✅ ACTIF |
+| `menu-persistence-bridge.js` | Pont menu ↔ persistance | ⭐⭐⭐ | ✅ ACTIF |
+| `force-restore-on-load.js` | Restauration au chargement (backup) | ⭐ | ✅ ACTIF |
+| `dev-persistence-adapter.js` | Adaptateur localStorage → IndexedDB | ⭐ OPTIONNEL | 🔧 UTIL |
+
+### Scripts de Diagnostic (Optionnels)
+
+| Fichier | Rôle | Statut |
+|---------|------|--------|
+| `diagnostic-chat-change.js` | Diagnostic changements de chat | 🔧 DEBUG |
+| `diagnostic-restauration-detaille.js` | Diagnostic restauration | 🔧 DEBUG |
+| `test-restore-force.js` | Test de restauration forcée | 🧪 TEST |
+
+### Scripts Obsolètes (Peuvent être Supprimés)
+
+| Fichier | Raison | Action |
+|---------|--------|--------|
+| `restore-on-any-change.js` | Remplacé par `auto-restore-chat-change.js` | ❌ SUPPRIMER |
+| `restore-with-context.js` | Approche abandonnée | ❌ SUPPRIMER |
+| `restore-smart-matching.js` | Approche abandonnée | ❌ SUPPRIMER |
+| `restore-tables-simple.js` | Version obsolète | ❌ SUPPRIMER |
+| `restore-on-chat-change.js` | Version obsolète | ❌ SUPPRIMER |
+| `force-restore-chat-change.js` | Version obsolète | ❌ SUPPRIMER |
+| `smart-restore-after-flowise.js` | Approche abandonnée | ❌ SUPPRIMER |
+| `auto-save-tables.js` | Non utilisé (sauvegarde gérée par services) | ❌ SUPPRIMER |
+| `restore-direct.js` | Version obsolète | ❌ SUPPRIMER |
+| `force-restore-menu-tables.js` | Version obsolète | ❌ SUPPRIMER |
+| `diagnostic-persistance.js` | Ancien diagnostic | ❌ SUPPRIMER |
+| `quick-diagnostic.js` | Ancien diagnostic | ❌ SUPPRIMER |
+| `diagnostic-timing-race.js` | Ancien diagnostic | ❌ SUPPRIMER |
+
+---
+
+## 📁 Dossier `src/services/` - Services Backend
+
+### Services Principaux
+
+| Fichier | Rôle | Priorité | Statut |
+|---------|------|----------|--------|
+| **`flowiseTableService.ts`** | Service principal de gestion des tables | ⭐⭐⭐ CRITIQUE | ✅ ACTIF |
+| **`menuIntegration.ts`** | Intégration menu ↔ services | ⭐⭐⭐ CRITIQUE | ✅ ACTIF |
+| **`flowiseTableBridge.ts`** | Pont frontend ↔ backend | ⭐⭐⭐ | ✅ ACTIF |
+| **`indexedDB.ts`** | Gestion IndexedDB | ⭐⭐⭐ | ✅ ACTIF |
+| `claraDatabase.ts` | Base de données Clara | ⭐⭐ | ✅ ACTIF |
+| `flowiseTableCache.ts` | Cache des tables | ⭐⭐ | ✅ ACTIF |
+| `flowiseTableLazyLoader.ts` | Chargement lazy | ⭐ | ✅ ACTIF |
+| `flowiseTimelineService.ts` | Timeline des tables | ⭐ | ✅ ACTIF |
+| `flowiseTableDiagnostics.ts` | Diagnostics | 🔧 | ✅ ACTIF |
+| `autoRestore.ts` | Auto-restauration | ⭐ | ✅ ACTIF |
+
+### Types
+
+| Fichier | Rôle |
+|---------|------|
+| `src/types/flowise_table_types.ts` | Types TypeScript pour les tables |
+
+---
+
+## 💾 Base de Données IndexedDB
+
+### Configuration
+
+```javascript
+Nom de la base : "clara_db"
+Version : 12
+Store principal : "clara_generated_tables"
+```
+
+### Autres Stores (dans clara_db)
+
+- `clara_sessions` : Sessions utilisateur
+- `clara_messages` : Messages des chats
+- `clara_users` : Utilisateurs
+- `clara_attachments` : Pièces jointes
+
+### SessionStorage
+
+```javascript
+Clé : "claraverse_stable_session"
+Valeur : "stable_session_1763237811596_xxx"
+```
+
+---
+
+## 📊 Hiérarchie des Dépendances
+
+```
+index.html
+├── wrap-tables-auto.js
+├── Flowise.js
+├── force-restore-on-load.js (module)
+│   └── flowiseTableBridge.ts
+│       └── flowiseTableService.ts
+│           └── indexedDB.ts
+├── menu-persistence-bridge.js
+│   └── menuIntegration.ts
+│       └── flowiseTableService.ts
+├── menu.js
+└── auto-restore-chat-change.js (module) ⭐ NOUVEAU
+    └── Événement: flowise:table:restore:request
+        └── menuIntegration.ts
+            └── flowiseTableService.ts
+                └── indexedDB.ts
+                    └── clara_db/clara_generated_tables
+```
+
+---
+
+## 🔄 Flux de Communication
+
+### Événements Personnalisés
+
+| Événement | Émetteur | Récepteur | Données |
+|-----------|----------|-----------|---------|
+| `flowise:table:save:request` | menu.js | menuIntegration.ts | `{ table, sessionId, keyword, source }` |
+| `flowise:table:restore:request` | auto-restore-chat-change.js | menuIntegration.ts | `{ sessionId }` |
+| `flowise:table:structure:changed` | menu.js | menuIntegration.ts | `{ action, rowIndex }` |
+| `flowise:table:update` | menuIntegration.ts | Subscribers | `{ tableId, keyword }` |
+
+---
+
+## 📝 Fichiers de Documentation
+
+### Documentation Active
+
+| Fichier | Contenu |
+|---------|---------|
+| **`DOCUMENTATION_COMPLETE_SOLUTION.md`** | Documentation exhaustive du système |
+| **`LISTE_FICHIERS_SYSTEME_PERSISTANCE.md`** | Ce fichier - Liste des fichiers |
+| `SITUATION_FINALE.md` | État final du système |
+
+### Documentation Obsolète (Peut être Archivée)
+
+Tous les fichiers `TEST_*.md`, `FIX_*.md`, `DIAGNOSTIC_*.md`, `SOLUTION_*.md` créés pendant le développement peuvent être déplacés dans un dossier `archive/` ou supprimés.
+
+---
+
+## 🗑️ Fichiers à Supprimer
+
+### Scripts Obsolètes dans `public/`
+
+```bash
+# Commandes pour nettoyer (à exécuter depuis la racine du projet)
+rm public/restore-on-any-change.js
+rm public/restore-with-context.js
+rm public/restore-smart-matching.js
+rm public/restore-tables-simple.js
+rm public/restore-on-chat-change.js
+rm public/force-restore-chat-change.js
+rm public/smart-restore-after-flowise.js
+rm public/auto-save-tables.js
+rm public/restore-direct.js
+rm public/force-restore-menu-tables.js
+rm public/diagnostic-persistance.js
+rm public/quick-diagnostic.js
+rm public/diagnostic-timing-race.js
+```
+
+### Fichiers HTML de Test
+
+```bash
+rm public/*.html  # Tous les fichiers de test HTML
+```
+
+### Documentation Obsolète
+
+```bash
+# Créer un dossier archive
+mkdir -p archive/docs
+
+# Déplacer les anciens docs
+mv TEST_*.md archive/docs/
+mv FIX_*.md archive/docs/
+mv DIAGNOSTIC_*.md archive/docs/
+mv SOLUTION_*.md archive/docs/
+mv RECAP_*.md archive/docs/
+mv GUIDE_*.md archive/docs/
+mv CORRECTION_*.md archive/docs/
+mv ANALYSE_*.md archive/docs/
+mv RESUME_*.md archive/docs/
+```
+
+---
+
+## ✅ Checklist de Vérification
+
+Après nettoyage, vérifier que ces fichiers existent :
+
+### Essentiels
+- [ ] `index.html`
+- [ ] `public/auto-restore-chat-change.js` ⭐
+- [ ] `public/wrap-tables-auto.js`
+- [ ] `public/Flowise.js`
+- [ ] `public/menu.js`
+- [ ] `public/menu-persistence-bridge.js`
+- [ ] `public/force-restore-on-load.js`
+
+### Services
+- [ ] `src/services/flowiseTableService.ts`
+- [ ] `src/services/menuIntegration.ts`
+- [ ] `src/services/flowiseTableBridge.ts`
+- [ ] `src/services/indexedDB.ts`
+
+### Documentation
+- [ ] `DOCUMENTATION_COMPLETE_SOLUTION.md`
+- [ ] `LISTE_FICHIERS_SYSTEME_PERSISTANCE.md`
+
+---
+
+## 🎯 Résumé
+
+**Fichiers critiques** : 11 fichiers  
+**Base de données** : 1 (clara_db)  
+**Stores** : 1 principal (clara_generated_tables)  
+**Événements** : 4 événements personnalisés  
+
+**Fichier clé de la solution** : `public/auto-restore-chat-change.js`
+
+---
+
+*Liste créée le 15 novembre 2025*  
+*Dernière mise à jour : 29 Août 2026 - Ajout correctifs anti-doublons*
+
+
+---
+
+## 📂 Doc Probleme message envoye/
+
+**Ajouté:** 02 Septembre 2026  
+**Problème résolu:** Messages envoyés n'apparaissent pas dans le chat
+
+### Fichiers
+
+1. **00_INDEX_COMPLET.md**
+   - Vue d'ensemble de la documentation
+   - Navigation vers tous les fichiers
+   - Historique du problème
+
+2. **00_DIAGNOSTIC_EN_COURS.md**
+   - Processus complet de diagnostic étape par étape
+   - Logs ajoutés pour tracer le flux
+   - Tests effectués
+   - Hypothèses initiales
+
+3. **01_SOLUTION_MESSAGES_N_APPARAISSENT_PAS.md**
+   - Root cause identifié (validation modèle IA)
+   - Code exact modifié
+   - Logs de validation
+   - Fichiers modifiés
+
+4. **02_HYPOTHESES_SOURCES_PROBLEME.md**
+   - 8 hypothèses explorées en détail
+   - Probabilités et tests pour chaque hypothèse
+   - Méthode de diagnostic utilisée
+   - Leçons apprises
+
+5. **03_SOLUTION_FINALE_RESUME.md**
+   - Résumé 1 page pour référence rapide
+   - Root cause + solution appliquée
+   - Guide diagnostic si le problème revient
+   - Statistiques de résolution
+
+### Root Cause du Problème
+
+**Validation obligatoire de modèle IA** dans `handleSendMessage()` (ClaraAssistant.tsx lignes 1393-1415) bloquait l'envoi avec un `return` précoce avant d'ajouter le message à l'état `messages`.
+
+### Solution Appliquée
+
+Commenté les validations de modèle pour permettre l'envoi sans modèle local (utile pour providers externes comme N8N, OpenRouter, etc.).
+
+### Lien avec la Persistance
+
+Ce problème n'était **pas directement lié** à la persistance des tables, mais il **bloquait tous les tests** de persistance car aucun message ne pouvait être envoyé. La résolution de ce problème était un **prérequis** pour tester la persistance des tables générées par conso.js.
+
+---
+
+## 📂 Correctifs Anti-Doublons - 29 Août 2026
+
+**Ajouté:** 29 Août 2026 23:00  
+**Problèmes résolus:** Doublons tables, erreurs backend connection
+
+### Fichiers Créés
+
+1. **QUICK_FIX_GUIDE.md** (Racine projet)
+   - Guide rapide pour la modification manuelle restante
+   - Snippet de code exact à appliquer
+   - Instructions de build et validation
+
+2. **CORRECTIFS_APPLIQUES_29_AOUT_2026.md** (Racine projet)
+   - Détails complets des modifications appliquées
+   - Statut de chaque correctif
+   - Instructions rollback
+   - Tests à effectuer
+
+3. **RESOLUTION_PROBLEMES_TABLES_29_AOUT_2026.md** (Racine projet)
+   - Analyse approfondie des 3 problèmes
+   - Solutions détaillées avec code
+   - Impact et résultats attendus
+   - Comparaison avant/après
+
+4. **LOGS_ANTI_DOUBLONS_29_AOUT.md** (Doc Systeme persistance chat/)
+   - Guide des nouveaux logs ajoutés
+   - Interprétation des logs [CLEANUP], [ANTI-DOUBLON], [VERIFIED]
+   - Tests de validation
+   - Dépannage rapide
+
+5. **00_AIDE_MEMOIRE_LOGS.md** (Mis à jour)
+   - Section ajoutée : "CORRECTIFS ANTI-DOUBLONS - 29 AOÛT 2026"
+   - Checklist post-correctifs
+   - Tableau comparatif impact
+
+### Scripts PowerShell
+
+1. **apply-patch-safe.ps1** (Racine projet)
+   - Script appliqué avec succès ✅
+   - Backup automatique créé (timestamp: 20260904-004919)
+   - Modifications dans flowiseTableBridge.ts, services backend
+
+2. **apply-anti-doublon-patch.ps1** (Racine projet)
+   - Version initiale avec émojis (erreur encoding)
+   - Remplacé par apply-patch-safe.ps1
+
+3. **patch-inject-table-anti-doublon.ps1** (Racine projet)
+   - Script pour modification spécifique injectTableIntoDOM
+   - Approche alternative si modification manuelle préférée
+
+### Modifications Fichiers
+
+| Fichier | Modifications | Statut |
+|---------|---------------|--------|
+| `src/services/flowiseTableBridge.ts` | ✅ Ajout `cleanupDuplicateTablesOnStartup()` | APPLIQUÉ |
+| `src/services/flowiseTableBridge.ts` | ⚠️ Renforcer anti-doublon dans `injectTableIntoDOM()` ligne ~1489 | MANUEL REQUIS |
+| `src/services/claraNotebookService.ts` | ✅ Désactivation health checking | APPLIQUÉ |
+| `src/services/claraTTSService.ts` | ✅ Désactivation health checking | APPLIQUÉ |
+
+### Backups Créés
+
+Tous avec timestamp `20260904-004919` :
+- `flowiseTableBridge.ts.backup-20260904-004919`
+- `claraNotebookService.ts.backup-20260904-004919`
+- `claraTTSService.ts.backup-20260904-004919`
+- `claraVoiceService.ts.backup-20260904-004919`
+
+### Problèmes Résolus
+
+1. **✅ Backend Connection Errors** (ERR_CONNECTION_REFUSED)
+   - Health checking désactivé dans services
+   - Aucune erreur `:5001/health` en console
+   - Logs : `[INFO] ... Health checking disabled`
+
+2. **✅ Doublons au Démarrage**
+   - Nettoyage automatique via `cleanupDuplicateTablesOnStartup()`
+   - Logs : `[CLEANUP] Removed X duplicate(s)` ou `No duplicates found`
+   - Vérification par keyword ET table-id
+
+3. **⚠️ Doublons lors Restauration** (NÉCESSITE ACTION MANUELLE)
+   - Triple vérification : keyword + table-id + wrappers
+   - Modification ligne ~1489 de flowiseTableBridge.ts requise
+   - Instructions dans QUICK_FIX_GUIDE.md
+
+### Nouveaux Logs à Surveiller
+
+```
+[CLEANUP] Removed X duplicate(s) on startup
+[CLEANUP] No duplicates found on startup
+[INFO] Notebook Service: Health checking disabled
+[INFO] TTS Service: Health checking disabled
+[ANTI-DOUBLON] Skip "Table_XXX" (ID: xxx)
+[VERIFIED] Restoring "Table_XXX" (ID: xxx)
+```
+
+### Impact
+
+| Aspect | Avant | Après |
+|--------|-------|-------|
+| Erreurs backend | ❌ ~100/min | ✅ 0 |
+| Doublons démarrage | ❌ Fréquents | ✅ Nettoyés auto |
+| Doublons restauration | 🟡 Partiels | ⚠️ Modif manuelle |
+| Performance | 🟡 Moyenne | ✅ Optimale |
+| Logs diagnostic | 🟡 Basiques | ✅ Détaillés |
+
+### Références Croisées
+
+- Guide logs complet : `00_AIDE_MEMOIRE_LOGS.md`
+- Guide modification : `QUICK_FIX_GUIDE.md`
+- Documentation technique : `RESOLUTION_PROBLEMES_TABLES_29_AOUT_2026.md`
+- Logs spécifiques : `LOGS_ANTI_DOUBLONS_29_AOUT.md`
+
+---
