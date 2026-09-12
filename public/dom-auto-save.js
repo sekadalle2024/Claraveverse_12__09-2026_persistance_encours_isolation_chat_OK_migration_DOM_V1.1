@@ -8,7 +8,7 @@
 class DOMAutoSave {
   constructor() {
     this.saveTimeout = null;
-    this.saveDelay = 500; // 500ms debounce
+    this.saveDelay = 1000; // ✅ 1000ms debounce (pour modifications multiples)
     this.observedTables = new WeakSet();
     this.init();
   }

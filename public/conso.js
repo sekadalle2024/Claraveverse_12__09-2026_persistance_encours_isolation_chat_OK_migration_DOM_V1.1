@@ -413,11 +413,19 @@
             cell.textContent = value;
             cell.style.backgroundColor = "#e8f5e8";
             debug.log(`Assertion sélectionnée: ${value}`);
-            // Sauvegarder après modification
+            
+            // ✅ MODIFICATION : Sauvegarde IMMÉDIATE (sans debounce)
             const parentTable = this.findParentTable(cell);
             if (parentTable) {
-              debug.log("💾 Déclenchement sauvegarde depuis assertion");
-              this.saveTableData(parentTable);
+              debug.log("💾 [CRITIQUE] Sauvegarde IMMÉDIATE depuis assertion");
+              this.saveTableDataNow(parentTable); // ← IMMÉDIAT
+              
+              // ✅ Double sécurité : Sauvegarder aussi via DOM Storage directement
+              if (window.domStorageManager && parentTable.dataset.keyword) {
+                const sessionId = this.detectCurrentSessionId();
+                window.domStorageManager.saveTable(sessionId, parentTable.dataset.keyword, parentTable);
+                debug.log("💾 [CRITIQUE] Double sauvegarde DOM Storage assertion OK");
+              }
             } else {
               debug.warn("⚠️ Table parente non trouvée pour sauvegarde");
             }
@@ -737,9 +745,17 @@
             } else {
               cell.style.backgroundColor = "#efe";
             }
-            // Sauvegarder après modification
-            debug.log("💾 Déclenchement sauvegarde depuis conclusion");
-            this.saveTableData(table);
+            
+            // ✅ MODIFICATION : Sauvegarde IMMÉDIATE (sans debounce)
+            debug.log("💾 [CRITIQUE] Sauvegarde IMMÉDIATE depuis conclusion");
+            this.saveTableDataNow(table); // ← IMMÉDIAT
+            
+            // ✅ Double sécurité : Sauvegarder aussi via DOM Storage directement
+            if (window.domStorageManager && table.dataset.keyword) {
+              const sessionId = this.detectCurrentSessionId();
+              window.domStorageManager.saveTable(sessionId, table.dataset.keyword, table);
+              debug.log("💾 [CRITIQUE] Double sauvegarde DOM Storage conclusion OK");
+            }
           },
         );
       });
@@ -756,11 +772,19 @@
           cell.textContent = value;
           cell.style.backgroundColor =
             value === "+" ? "#e8f5e8" : value === "-" ? "#fee8e8" : "#f5f5f5";
-          // Sauvegarder après modification
+          
+          // ✅ MODIFICATION : Sauvegarde IMMÉDIATE (sans debounce)
           const parentTable = this.findParentTable(cell);
           if (parentTable) {
-            debug.log("💾 Déclenchement sauvegarde depuis CTR");
-            this.saveTableData(parentTable);
+            debug.log("💾 [CRITIQUE] Sauvegarde IMMÉDIATE depuis CTR");
+            this.saveTableDataNow(parentTable); // ← IMMÉDIAT
+            
+            // ✅ Double sécurité : Sauvegarder aussi via DOM Storage directement
+            if (window.domStorageManager && parentTable.dataset.keyword) {
+              const sessionId = this.detectCurrentSessionId();
+              window.domStorageManager.saveTable(sessionId, parentTable.dataset.keyword, parentTable);
+              debug.log("💾 [CRITIQUE] Double sauvegarde DOM Storage CTR OK");
+            }
           } else {
             debug.warn("⚠️ Table parente non trouvée pour sauvegarde");
           }

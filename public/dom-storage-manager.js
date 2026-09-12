@@ -56,6 +56,10 @@ class DOMStorageManager {
     try {
       const sessionContainer = this.getSessionContainer(sessionId);
       
+      // ✅ NOUVEAU : Log détaillé AVANT sauvegarde
+      console.log(`📝 [DOM Storage] Tentative sauvegarde: sessionId=${sessionId}, keyword=${keyword}`);
+      console.log(`📝 [DOM Storage] Contenu table: ${tableElement.textContent.substring(0, 100)}...`);
+      
       // Chercher table existante
       let storedTable = sessionContainer.querySelector(`table[data-keyword="${keyword}"]`);
       
@@ -71,7 +75,7 @@ class DOMStorageManager {
         });
         
         storedTable.setAttribute('data-updated-at', new Date().toISOString());
-        console.log(`🔄 [DOM Storage] Table mise à jour: ${keyword}`);
+        console.log(`🔄 [DOM Storage] Table mise à jour: ${keyword} (${new Date().toLocaleTimeString()})`);
       } else {
         // Créer nouvelle table
         storedTable = tableElement.cloneNode(true);
@@ -79,12 +83,19 @@ class DOMStorageManager {
         storedTable.setAttribute('data-table-id', tableElement.dataset.tableId || `table_${Date.now()}`);
         storedTable.setAttribute('data-saved-at', new Date().toISOString());
         sessionContainer.appendChild(storedTable);
-        console.log(`💾 [DOM Storage] Table sauvegardée: ${keyword}`);
+        console.log(`💾 [DOM Storage] Table sauvegardée: ${keyword} (${new Date().toLocaleTimeString()})`);
       }
+      
+      // ✅ NOUVEAU : Log détaillé APRÈS sauvegarde
+      console.log(`✅ [DOM Storage] Sauvegarde confirmée: ${keyword}`);
+      console.log(`✅ [DOM Storage] Timestamp: ${new Date().toISOString()}`);
+      console.log(`✅ [DOM Storage] Taille: ${storedTable.outerHTML.length} chars`);
       
       return true;
     } catch (error) {
       console.error('❌ [DOM Storage] Erreur sauvegarde:', error);
+      console.error('❌ [DOM Storage] Keyword:', keyword);
+      console.error('❌ [DOM Storage] SessionId:', sessionId);
       return false;
     }
   }
